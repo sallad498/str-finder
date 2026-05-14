@@ -284,25 +284,29 @@ export default function App() {
 
   async function fetchZillow(zip, county, rcData) {
     try {
-      const url = `https://real-estate-zillow-com.p.rapidapi.com/propertyExtendedSearch?location=${encodeURIComponent(zip + ", NY")}&home_type=Houses%2CTownhomes&status_type=ForSale&price_max=600000&bedsMin=2`;
+      const url = `https://real-estate-zillow-com.p.rapidapi.com/v1/search/sale?location_or_rid=${encodeURIComponent(zip + " NY")}&listing_types=agent&property_types=house&sort=relevant&page=1`;
       const res = await fetch(url, { headers: { "X-RapidAPI-Key": ZILLOW_KEY, "X-RapidAPI-Host": ZILLOW_HOST } });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      return (data?.props || []).map(p => {
-        const price = p.price || 0;
-        const beds = p.bedrooms || 3;
-        const sqft = p.livingArea || 1400;
+      const rawText = await res.text();
+      if (!res.ok) throw new Error(`HTTP ${res.status}: ${rawText.slice(0, 200)}`);
+      let data;
+      try { data = JSON.parse(rawText); } catch { throw new Error(`Bad JSON: ${rawText.slice(0, 200)}`); }
+      const props = data?.results || data?.props || data?.listings || data?.data || [];
+      setErrors(prev => [...prev, `DEBUG ${zip}: status=${res.status} keys=${Object.keys(data).join(",")} props=${props.length}`]);
+      return props.map(p => {
+        const price = p.price || p.listPrice || p.unformattedPrice || 0;
+        const beds = p.bedrooms || p.beds || 3;
+        const sqft = p.livingArea || p.sqft || p.area || 1400;
         const metrics = calcMetrics(price, beds, county, rcData);
         const listing = {
-          id: p.zpid || Math.random(),
+          id: p.zpid || p.id || Math.random(),
           county, zip,
-          address: p.address || `${zip}, NY`,
+          address: p.address || p.streetAddress || `${zip}, NY`,
           price, beds,
-          baths: p.bathrooms || 2,
+          baths: p.bathrooms || p.baths || 2,
           sqft,
           yearBuilt: p.yearBuilt || "N/A",
-          propType: (p.homeType || "House").replace(/_/g, " ").toLowerCase().replace(/\b\w/g, c => c.toUpperCase()),
-          url: p.detailUrl ? `https://www.zillow.com${p.detailUrl}` : null,
+          propType: (p.homeType || p.propertyType || p.type || "House").replace(/_/g, " ").toLowerCase().replace(/\b\w/g, c => c.toUpperCase()),
+          url: p.detailUrl ? `https://www.zillow.com${p.detailUrl}` : p.url || null,
           ...metrics,
         };
         listing.score = strScore(county, listing.capRate);
