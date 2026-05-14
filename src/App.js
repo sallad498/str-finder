@@ -20,9 +20,9 @@ async function loadCache() {
   } catch { return null; }
 }
 
-const ZILLOW_KEY = process.env.REACT_APP_ZILLOW_KEY;
+const ZILLOW_KEY = "24f4c6b4a9mshf5296fdd34b1a70p16221fjsn7d96431f1636";
 const ZILLOW_HOST = "real-estate-zillow-com.p.rapidapi.com";
-const RENTCAST_KEY = process.env.REACT_APP_RENTCAST_KEY;
+const RENTCAST_KEY = "a3011813a6d94086ab81e98fcde57de0";
 
 const COUNTIES = {
   Sullivan:  { zips: ["12748","12701"], driveHrs: 1.5, ski: ["Catamount (40 min)","Holiday Mtn (25 min)"], hiking: ["Catskill Center Trails (20 min)","D&H Rail Trail (15 min)"], strRegs: "Minimal restrictions. No county-wide STR law. Town-level permits vary — most are STR-friendly.", strScore: 95 },
@@ -339,20 +339,19 @@ export default function App() {
     const rcData = await fetchRentcast();
     const results = [];
     for (const [county, info] of Object.entries(COUNTIES)) {
-      for (const zip of info.zips) {
-        const rc = rcData[zip] || null;
-        const listings = await fetchZillow(zip, county, rc);
+        const rc = rcData[info.zips[0]] || null;
+        const listings = await fetchZillow(info.zips[0], county, rc);
         results.push(...listings);
         setAllListings([...results]);
-        await new Promise(r => setTimeout(r, 400));
-      }
+        await new Promise(r => setTimeout(r, 1500));
     }
     saveCache(results, rcData);
     setLastUpdated(Date.now());
     setFetchStatus("done");
   }
 
-useEffect(() => { fetchAll(false); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { fetchAll(false); }, [fetchAll]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const filtered = useMemo(() => allListings.filter(l =>
     (selCounty === "All" || l.county === selCounty) &&
     l.price <= maxPrice && l.capRate >= minCap && l.beds >= minBeds
