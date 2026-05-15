@@ -350,8 +350,8 @@ export default function App() {
     setFetchStatus("done");
   }
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { fetchAll(false); }, []);
+  useEffect(() => { fetchAll(false); }, [fetchAll]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const filtered = useMemo(() => allListings.filter(l =>
     (selCounty === "All" || l.county === selCounty) &&
     l.price <= maxPrice && l.capRate >= minCap && l.beds >= minBeds
