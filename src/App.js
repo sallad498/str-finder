@@ -274,8 +274,8 @@ export default function App() {
       if (!res.ok) throw new Error(`HTTP ${res.status}: ${rawText.slice(0, 200)}`);
       let data;
       try { data = JSON.parse(rawText); } catch { throw new Error(`Bad JSON: ${rawText.slice(0, 200)}`); }
-      const props = data?.results || data?.props || data?.listings || data?.data || [];
-      setErrors(prev => [...prev, `DEBUG ${zip}: status=${res.status} keys=${Object.keys(data).join(",")} props=${props.length}`]);
+const inner = data?.data || {};
+const props = Array.isArray(inner) ? inner : (inner.listings || inner.results || inner.props || []);      setErrors(prev => [...prev, `DEBUG ${zip}: status=${res.status} keys=${Object.keys(data).join(",")} props=${props.length}`]);
       return props.map(p => {
         const price = p.price || p.listPrice || p.unformattedPrice || 0;
         const beds = p.bedrooms || p.beds || 3;
