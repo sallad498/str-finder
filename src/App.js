@@ -262,24 +262,8 @@ export default function App() {
   const [activeTab, setActiveTab] = useState("listings");
 
   async function fetchRentcast() {
-    setRentcastStatus("loading");
-    const results = {};
-    const allZips = Object.values(COUNTIES).flatMap(c => c.zips);
-    for (const zip of allZips) {
-      try {
-        const res = await fetch(`https://api.rentcast.io/v1/markets?zipCode=${zip}&dataType=Rental`, {
-          headers: { "X-Api-Key": RENTCAST_KEY, "accept": "application/json" }
-        });
-        if (res.ok) {
-          const data = await res.json();
-          results[zip] = data;
-        }
-      } catch {}
-      await new Promise(r => setTimeout(r, 200));
-    }
-    setRentcastByZip(results);
     setRentcastStatus("done");
-    return results;
+    return {};
   }
 
   async function fetchZillow(zip, county, rcData) {
