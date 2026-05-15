@@ -22,7 +22,7 @@ async function loadCache() {
 
 const ZILLOW_KEY = "24f4c6b4a9mshf5296fdd34b1a70p16221fjsn7d96431f1636";
 const ZILLOW_HOST = "real-estate-zillow-com.p.rapidapi.com";
-const RENTCAST_KEY = "a3011813a6d94086ab81e98fcde57de0";
+// const RENTCAST_KEY = "a3011813a6d94086ab81e98fcde57de0"; // Re-enable next month
 
 const COUNTIES = {
   Sullivan:  { zips: ["12748","12701"], driveHrs: 1.5, ski: ["Catamount (40 min)","Holiday Mtn (25 min)"], hiking: ["Catskill Center Trails (20 min)","D&H Rail Trail (15 min)"], strRegs: "Minimal restrictions. No county-wide STR law. Town-level permits vary — most are STR-friendly.", strScore: 95 },
