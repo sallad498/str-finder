@@ -350,7 +350,7 @@ export default function App() {
     setFetchStatus("done");
   }
 
-// eslint-disable-next-line react-hooks/exhaustive-deps
+// eslint-disabnple-next-line react-hooks/exhaustive-deps
   useEffect(() => { fetchAll(false); }, []);
   const filtered = useMemo(() => allListings.filter(l =>
     (selCounty === "All" || l.county === selCounty) &&
